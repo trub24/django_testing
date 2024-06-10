@@ -26,8 +26,7 @@ class TestNoteCreation(TestCase):
 
     def test_anonymous_user_cant_create_note(self):
         self.client.post(self.url, data=self.form_data)
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 0)
+        self.assertFalse(Note.objects.exists())
 
     def test_user_can_create_note(self):
         response = self.auth_client.post(self.url, data=self.form_data)
@@ -109,8 +108,7 @@ class TestNoteEditDelete(TestCase):
     def test_author_can_delete_note(self):
         response = self.author_client.delete(self.delete_url)
         self.assertRedirects(response, reverse('notes:success', None))
-        notes_count = Note.objects.count()
-        self.assertEqual(notes_count, 0)
+        self.assertFalse(Note.objects.exists())
 
     def test_user_cant_delete_note_of_another_user(self):
         response = self.reader_client.delete(self.delete_url)

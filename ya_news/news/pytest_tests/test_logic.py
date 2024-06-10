@@ -13,7 +13,7 @@ def test_anonymous_user_cant_create_comment(client, form_data, news):
     login_url = reverse('users:login')
     expected_url = f'{login_url}?next={url}'
     assertRedirects(response, expected_url)
-    assert Comment.objects.count() == 0
+    assert Comment.objects.exists() is False
 
 
 @pytest.mark.django_db
@@ -34,7 +34,7 @@ def test_user_cant_use_bad_words(news, form_data, author_client):
     form_data['text'] = BAD_WORDS[0]
     response = author_client.post(url, data=form_data)
     assertFormError(response, 'form', 'text', errors=WARNING)
-    assert Comment.objects.count() == 0
+    assert Comment.objects.exists() is False
 
 
 def test_author_can_delete_comment(comment, news, author_client):
@@ -42,7 +42,7 @@ def test_author_can_delete_comment(comment, news, author_client):
     reirect_url = reverse('news:detail', args=(news.id,))
     response = author_client.post(url)
     assertRedirects(response, f'{reirect_url}#comments')
-    assert Comment.objects.count() == 0
+    assert Comment.objects.exists() is False
 
 
 def test_user_cant_delete_comment_of_another_user(comment, not_author_client):
